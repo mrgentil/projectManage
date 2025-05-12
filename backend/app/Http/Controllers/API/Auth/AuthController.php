@@ -2,11 +2,13 @@
 // app/Http/Controllers/API/Auth/AuthController.php
 namespace App\Http\Controllers\API\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 
 class AuthController extends Controller
 {
@@ -38,5 +40,20 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         return response()->json(auth()->user());
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['message' => 'Mot de passe actuel incorrect.'], 422);
+        }
+
+        $user->update([
+            'password' => bcrypt($request->new_password)
+        ]);
+
+        return response()->json(['message' => 'Mot de passe mis à jour avec succès.']);
     }
 }
