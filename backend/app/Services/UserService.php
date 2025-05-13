@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
@@ -31,5 +32,16 @@ class UserService
     public function destroy(User $user)
     {
         return $this->userRepository->delete($user);
+    }
+
+    public function updateProfile(User $user, array $data)
+    {
+        if (isset($data['profile_picture'])) {
+            $path = $data['profile_picture']->store('profile_pictures', 'public');
+            $data['profile_picture'] = $path;
+        }
+
+        $user->update($data);
+        return $user->fresh();
     }
 }

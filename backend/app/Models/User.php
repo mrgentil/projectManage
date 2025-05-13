@@ -22,7 +22,10 @@ class User extends Authenticatable
         'phone_number',
         'address',
         'is_active',
-        'last_login_at'
+        'last_login_at',
+        'date_of_birth',
+        'job_title',
+        'department_id',
     ];
 
     protected $hidden = ['password', 'remember_token'];

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Policies;
 
 use App\Models\User;
@@ -49,5 +50,9 @@ class UserPolicy
         // Seuls les Admins peuvent forcer la suppression
         return $user->role->name === 'Admin';
     }
-}
 
+    public function updateProfile(User $user, User $targetUser): bool
+    {
+        return $user->id === $targetUser->id || $user->role?->name === 'Admin';
+    }
+}

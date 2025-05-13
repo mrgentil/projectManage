@@ -2,11 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\Auth\AuthController;
-use App\Http\Controllers\API\Auth\ForgotPasswordController;
-use App\Http\Controllers\API\Auth\ResetPasswordController;
+use App\Http\Controllers\API\RoleController;
 use Illuminate\Support\Facades\Password;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\Auth\ResetPasswordController;
+use App\Http\Controllers\API\Auth\ForgotPasswordController;
 
 
 /*
@@ -30,6 +32,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-password', [AuthController::class, 'updatePassword']);
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
     Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
+    Route::post('/profile/update', [UserController::class, 'updateProfile']);
+    // L'utilisateur modifie son propre profil
+    Route::put('/my-profile', [UserController::class, 'updateMyProfile']);
+
+    // L'admin modifie un utilisateur existant
+    Route::put('/users/{user}', [UserController::class, 'update']);
+    Route::apiResource('departments', DepartmentController::class);
+    Route::apiResource('roles', RoleController::class);
 
 
 });
