@@ -30,9 +30,9 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    public function role(): BelongsTo
+    public function roles()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToMany(Role::class);
     }
 
     public function projects(): HasMany
@@ -91,4 +91,27 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function hasPermission($permission)
+    {
+        return $this->permissions()->where('name', $permission)->exists()
+            || $this->roles()->whereHas('permissions', fn($q) => $q->where('name', $permission))->exists();
+    }
+
+    public function assignRole($roleId)
+    {
+        $this->roles()->syncWithoutDetaching([$roleId]);
+    }
+
+    public function givePermissionTo($permissionId)
+    {
+        $this->permissions()->syncWithoutDetaching([$permissionId]);
+    }
+    public function permissions() {
+    return $this->belongsToMany(Permission::class);
+}
 }
