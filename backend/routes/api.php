@@ -45,6 +45,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{user}/assign-role', [RolePermissionController::class, 'assignRoleToUser']);
     Route::post('/roles/{role}/assign-permissions', [RolePermissionController::class, 'assignPermissionToRole']);
     Route::post('/users/{user}/assign-permissions', [RolePermissionController::class, 'assignPermissionToUser']);
-
-
+    Route::apiResource('projects', App\Http\Controllers\API\ProjectController::class);
 });

@@ -9,7 +9,17 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 class Project extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'description', 'start_date', 'end_date', 'status', 'priority', 'manager_id'];
+     protected $fillable = [
+        'name',
+        'description',
+        'start_date',
+        'end_date',
+        'status',
+        'priority',
+        'client_name',
+        'budget',
+        'manager_id',
+    ];
 
     public function manager(): BelongsTo
     {
