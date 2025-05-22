@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory; // ✅
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class Project extends Model
 {
     use HasFactory;
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'description',
         'start_date',
@@ -31,10 +32,13 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
-    public function teamMembers()
+    public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)
+            ->withPivot('role_in_project')
+            ->withTimestamps();
     }
+
 
     public function users()
     {

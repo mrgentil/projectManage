@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Services\ProjectService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
-use App\Services\ProjectService;
+use App\Http\Requests\Project\AddUserToProjectRequest;
+use App\Http\Requests\Project\RemoveUserFromProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -39,5 +41,19 @@ class ProjectController extends Controller
         $this->service->destroy($project);
         return response()->json(null, 204);
     }
-}
 
+    public function addUser(AddUserToProjectRequest $request, Project $project)
+    {
+        $this->authorize('addUser', $project); // 👈 vérifie si l'utilisateur connecté est autorisé
+        $this->authorize('update', $project); // ou 'manageMembers', selon ta policy
+        $this->service->addUserToProject($project, $request->user_id, $request->role_in_project);
+        return response()->json(['message' => 'Utilisateur ajouté au projet']);
+    }
+
+    public function removeUser(RemoveUserFromProjectRequest $request, Project $project)
+    {
+        $this->authorize('update', $project);
+        $this->service->removeUserFromProject($project, $request->user_id);
+        return response()->json(['message' => 'Utilisateur retiré du projet']);
+    }
+}

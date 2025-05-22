@@ -1,49 +1,52 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Password;
-use App\Http\Controllers\API\RoleController;
-use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\RolePermissionController;
-use App\Http\Controllers\API\Auth\ResetPasswordController;
 use App\Http\Controllers\API\Auth\ForgotPasswordController;
+use App\Http\Controllers\API\Auth\ResetPasswordController;
+use App\Http\Controllers\API\ProjectController;
 
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-
+// Auth (login/logout/me/reset)
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Authenticated user
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('users', UserController::class);
     Route::post('/update-password', [AuthController::class, 'updatePassword']);
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
-    Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
     Route::post('/profile/update', [UserController::class, 'updateProfile']);
-    // L'utilisateur modifie son propre profil
     Route::put('/my-profile', [UserController::class, 'updateMyProfile']);
 
-    // L'admin modifie un utilisateur existant
-    Route::put('/users/{user}', [UserController::class, 'update']);
-    Route::apiResource('departments', DepartmentController::class);
-    Route::apiResource('roles', RoleController::class);
+    // Utilisateurs
+    Route::apiResource('users', UserController::class);
+    Route::put('/users/{user}', [UserController::class, 'update']); // Redondant avec apiResource si tu n’as pas besoin de personnalisation
 
+    // Départements
+    Route::apiResource('departments', DepartmentController::class);
+
+    // Rôles et permissions
+    Route::apiResource('roles', RoleController::class);
     Route::post('/users/{user}/assign-role', [RolePermissionController::class, 'assignRoleToUser']);
     Route::post('/roles/{role}/assign-permissions', [RolePermissionController::class, 'assignPermissionToRole']);
     Route::post('/users/{user}/assign-permissions', [RolePermissionController::class, 'assignPermissionToUser']);
-    Route::apiResource('projects', App\Http\Controllers\API\ProjectController::class);
+
+    // Projets
+    Route::prefix('projects')->controller(ProjectController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('{project}', 'show');
+        Route::put('{project}', 'update');
+        Route::delete('{project}', 'destroy');
+
+        // Gestion des membres
+        Route::post('{project}/add-user', 'addUser');
+        Route::post('{project}/remove-user', 'removeUser');
+        Route::get('{project}/members', 'members');
+    });
 });
