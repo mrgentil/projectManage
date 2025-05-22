@@ -9,16 +9,32 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo};
 class Task extends Model
 {
     use HasFactory;
-    protected $fillable = ['project_id', 'name', 'description', 'assigned_to', 'status', 'due_date', 'priority'];
 
-    public function project(): BelongsTo
+    protected $fillable = [
+        'project_id',
+        'name',
+        'description',
+        'status',
+        'priority',
+        'estimated_hours',
+        'actual_hours',
+        'is_recurring',
+        'due_date',
+        'creator_id',
+    ];
+
+    public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function assignedUser(): BelongsTo
+    public function users()
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsToMany(User::class, 'task_user')->withTimestamps();
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }
-

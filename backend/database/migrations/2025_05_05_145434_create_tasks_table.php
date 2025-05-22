@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->foreignId('assigned_to')->constrained('users')->onDelete('cascade');
+            // $table->foreignId('assigned_to')->constrained('users')->onDelete('cascade');
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['En cours', 'En progression', 'Achevé'])->default('En cours');
             $table->enum('priority', ['Faible', 'Moyen', 'Elevé', 'Urgent'])->default('Moyen');
             $table->integer('estimated_hours')->nullable();

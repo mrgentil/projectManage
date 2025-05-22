@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Auth\AuthController;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\RoleController;
-use App\Http\Controllers\API\RolePermissionController;
-use App\Http\Controllers\API\Auth\ForgotPasswordController;
-use App\Http\Controllers\API\Auth\ResetPasswordController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ProjectController;
+use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\RolePermissionController;
+use App\Http\Controllers\API\Auth\ResetPasswordController;
+use App\Http\Controllers\API\Auth\ForgotPasswordController;
 
 // Auth (login/logout/me/reset)
 Route::post('/login', [AuthController::class, 'login']);
@@ -48,6 +49,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{project}/add-user', 'addUser');
         Route::post('{project}/remove-user', 'removeUser');
         Route::get('{project}/members', 'members');
+    });
 
+    // Tâches
+    Route::prefix('tasks')->controller(TaskController::class)->group(function () {
+        Route::get('/', [TaskController::class, 'index']);
+        Route::post('/', [TaskController::class, 'store']);
+        Route::get('{task}', [TaskController::class, 'show']);
+        Route::put('{task}', [TaskController::class, 'update']);
+        Route::delete('{task}', [TaskController::class, 'destroy']);
+
+        Route::post('{task}/assign-users', [TaskController::class, 'assignUsers']);
+        Route::post('{task}/remove-user', [TaskController::class, 'removeUser']);
+        Route::get('{task}/users', [TaskController::class, 'users']);
     });
 });

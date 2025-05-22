@@ -40,10 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(Project::class, 'manager_id');
     }
 
-    public function tasks(): HasMany
+    public function tasks()
     {
-        return $this->hasMany(Task::class, 'assigned_to');
+        return $this->belongsToMany(Task::class, 'task_user')->withTimestamps();
     }
+
 
     public function sentMessages(): HasMany
     {
@@ -73,8 +74,8 @@ class User extends Authenticatable
     public function projectsUser()
     {
         return $this->belongsToMany(Project::class)
-        ->withPivot('role_in_project')
-        ->withTimestamps();
+            ->withPivot('role_in_project')
+            ->withTimestamps();
     }
 
     public function department()
@@ -113,7 +114,8 @@ class User extends Authenticatable
     {
         $this->permissions()->syncWithoutDetaching([$permissionId]);
     }
-    public function permissions() {
-    return $this->belongsToMany(Permission::class);
-}
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
 }
