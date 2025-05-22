@@ -45,4 +45,9 @@ class ProjectService
     {
         return $project->users()->detach($userId);
     }
+
+    public function getProjectMembers(Project $project)
+    {
+        return $project->members()->withPivot('role_in_project')->get();
+    }
 }

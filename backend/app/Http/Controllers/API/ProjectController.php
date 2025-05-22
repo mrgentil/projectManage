@@ -56,4 +56,13 @@ class ProjectController extends Controller
         $this->service->removeUserFromProject($project, $request->user_id);
         return response()->json(['message' => 'Utilisateur retiré du projet']);
     }
+
+    public function members(Project $project)
+    {
+        $this->authorize('view', $project); // facultatif si nécessaire
+
+        $members = $this->service->getProjectMembers($project);
+
+        return response()->json($members);
+    }
 }

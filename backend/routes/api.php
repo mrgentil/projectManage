@@ -48,5 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{project}/add-user', 'addUser');
         Route::post('{project}/remove-user', 'removeUser');
         Route::get('{project}/members', 'members');
+
     });
 });

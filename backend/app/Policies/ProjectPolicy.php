@@ -21,16 +21,19 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        //
+        // Exemple : l’utilisateur peut voir s’il est le manager ou un membre du projet
+        // return $user->id === $project->manager_id
+        //     || $project->members->contains($user);
+
+             return $user->id === $project->manager_id
+        || $project->members->contains($user);
     }
+
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
-    {
-
-    }
+    public function create(User $user): bool {}
 
     /**
      * Determine whether the user can update the model.
