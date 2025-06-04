@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\MessageController;
 use App\Http\Controllers\API\ProjectController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\DepartmentController;
 use App\Http\Controllers\API\RolePermissionController;
@@ -65,4 +67,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{task}/status', [TaskController::class, 'updateStatus']);
         Route::get('{task}/status-history', [TaskController::class, 'statusHistory']);
     });
+
+    // Messages
+    Route::prefix('messages')->controller(MessageController::class)->group(function () {
+        Route::post('/', 'store');              // POST /api/messages
+        Route::get('/inbox', 'inbox');          // GET /api/messages/inbox
+        Route::get('/sent', 'sent');            // GET /api/messages/sent
+        Route::get('/{message}', 'show');       // GET /api/messages/{id}
+    });
+
+    Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::get('/unread', [NotificationController::class, 'unread']);
+    Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
+});
 });
