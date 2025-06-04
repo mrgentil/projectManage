@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Task;
-use App\Http\Controllers\Controller;
 use App\Services\TaskService;
+use App\Models\TaskStatusHistory;
+use App\Http\Controllers\Controller;
+use App\Notifications\TaskStatusUpdated;
 use App\Http\Requests\Task\StoreTaskRequest;
+use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Http\Requests\Task\UpdateTaskStatusRequest;
 use App\Http\Requests\Task\AssignUsersToTaskRequest;
 use App\Http\Requests\Task\RemoveUserFromTaskRequest;
 
@@ -70,5 +74,38 @@ class TaskController extends Controller
     {
         $this->authorize('viewUsers', $task);
         return response()->json($this->service->getUsers($task));
+    }
+
+    public function updateStatus(UpdateTaskStatusRequest $request, Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $oldStatus = $task->status;
+        $newStatus = $request->status;
+
+        $task->update(['status' => $newStatus]);
+
+        // Historique
+        TaskStatusHistory::create([
+            'task_id' => $task->id,
+            'changed_by' => auth()->id(),
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+        ]);
+
+        // Notification
+        Notification::send($task->users, new TaskStatusUpdated($task, $oldStatus, $newStatus));
+
+        return response()->json([
+            'message' => 'Statut mis à jour avec succès.',
+            'task' => $task,
+        ]);
+    }
+
+    public function statusHistory(Task $task)
+    {
+       // $this->authorize('view', $task);
+
+        return response()->json($task->statusHistories()->with('user')->latest()->get());
     }
 }

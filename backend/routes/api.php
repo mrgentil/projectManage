@@ -62,5 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{task}/assign-users', [TaskController::class, 'assignUsers']);
         Route::post('{task}/remove-user', [TaskController::class, 'removeUser']);
         Route::get('{task}/users', [TaskController::class, 'users']);
+        Route::patch('{task}/status', [TaskController::class, 'updateStatus']);
+        Route::get('{task}/status-history', [TaskController::class, 'statusHistory']);
     });
 });
